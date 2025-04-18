@@ -1,0 +1,43 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+    body {
+      @apply font-roboto bg-gray-100 text-gray-800;
+    }
+  }
+  
+  @layer components {
+    .sidebar {
+      @apply bg-diaroBlue text-white w-1/4 flex flex-col;
+    }
+  
+    .sidebar-header {
+      @apply flex items-center p-4;
+    }
+  
+    .sidebar-user {
+      @apply flex items-center p-4 bg-diaroDark;
+    }
+  
+    .sidebar-user img {
+      @apply w-10 h-10 rounded-full mr-2;
+    }
+  
+    .entry-card {
+      @apply bg-white rounded shadow p-4 flex;
+    }
+  
+    .entry-title {
+      @apply font-bold text-lg;
+    }
+  
+    .entry-meta {
+      @apply flex items-center text-gray-500 text-sm mt-2;
+    }
+  
+    .btn-add-entry {
+      @apply bg-diaroDark px-4 py-2 rounded text-white font-medium hover:bg-blue-800;
+    }
+  }

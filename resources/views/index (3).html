@@ -1,0 +1,50 @@
+<html>
+<head>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+</head>
+<body class="bg-blue-50 text-black">
+    <div class="max-w-4xl mx-auto p-8">
+        <h1 class="text-3xl font-bold mb-6">Create Catatan</h1>
+        <form>
+            <div class="grid grid-cols-2 gap-6 mb-6">
+                <div>
+                    <label for="title" class="block mb-2">Title <span class="text-red-500">*</span></label>
+                    <input type="text" id="title" class="w-full p-2 bg-gray-200 border border-gray-300 rounded">
+                </div>
+                <div>
+                    <label for="content" class="block mb-2">Content <span class="text-red-500">*</span></label>
+                    <textarea id="content" class="w-full p-2 bg-gray-200 border border-gray-300 rounded"></textarea>
+                </div>
+            </div>
+            <div class="grid grid-cols-2 gap-6 mb-6">
+                <div>
+                    <label for="entry-date" class="block mb-2">Entry date <span class="text-red-500">*</span></label>
+                    <div class="relative">
+                        <input type="text" id="entry-date" class="w-full p-2 bg-gray-200 border border-gray-300 rounded" placeholder="dd/mm/yyyy">
+                        <i class="fas fa-calendar-alt absolute right-3 top-3 text-gray-500"></i>
+                    </div>
+                </div>
+                <div>
+                    <label for="time" class="block mb-2">Time <span class="text-red-500">*</span></label>
+                    <div class="relative">
+                        <input type="text" id="time" class="w-full p-2 bg-gray-200 border border-gray-300 rounded" placeholder="--:--:--">
+                        <i class="fas fa-clock absolute right-3 top-3 text-gray-500"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="mb-6">
+                <label for="image" class="block mb-2">Image</label>
+                <div class="w-full p-6 bg-gray-200 border border-gray-300 rounded text-center">
+                    Drag & Drop your files or <a href="#" class="text-blue-500">Browse</a>
+                </div>
+            </div>
+            <div class="flex space-x-4">
+                <button type="submit" class="bg-yellow-500 text-black px-4 py-2 rounded">Create</button>
+                <button type="button" class="bg-gray-700 text-white px-4 py-2 rounded">Create & create another</button>
+                <button type="button" class="bg-gray-800 text-white px-4 py-2 rounded border border-gray-700">Cancel</button>
+            </div>
+        </form>
+    </div>
+</body>
+</html>
