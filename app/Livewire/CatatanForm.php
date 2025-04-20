@@ -14,11 +14,18 @@ use Filament\Forms\Form;
 use Illuminate\Contracts\View\View;
 use Livewire\Component;
 use Livewire\WithFileUploads;
+use Livewire\TemporaryUploadedFile;
 
 class CatatanForm extends Component implements HasForms
 {
     use Forms\Concerns\InteractsWithForms;
     use WithFileUploads;
+    
+    public $title;
+    public $content;
+    public $date;
+    public $time;
+    public $image_path;
 
     protected static ?string $model = Catatan::class; // Menghubungkan form dengan model Catatan
 
@@ -33,7 +40,7 @@ class CatatanForm extends Component implements HasForms
             Textarea::make('content')
                 ->label('Cerita Kegiatanmu')
                 ->required(),
-            DatePicker::make('entry_date')
+            DatePicker::make('date')
                 ->label('Tanggal')
                 ->required(),
             TimePicker::make('time')
@@ -43,6 +50,7 @@ class CatatanForm extends Component implements HasForms
                 ->label('Foto Kegiatan')
                 ->image()
                 ->directory('catatan-images')
+                ->visibility('public')
                 ->preserveFilenames()
                 ->maxSize(2048)
                 ->required()
@@ -59,18 +67,33 @@ class CatatanForm extends Component implements HasForms
 
     public function submit()
     {
-        $data = $this->form->getState();
+        // $data = $this->form->getState();
 
-        if (isset($data['image_path'])) {
-            $data['image_path'] = $data['image_path']->store('catatan-images', 'public');
+        // try {
+        //     $this->record->fill($data); // Isi model dengan data dari form
+        //     $this->record->save(); // Simpan model ke database
+
+        //     session()->flash('success', 'Diary berhasil ditambahkan!');
+        //     return redirect()->route('catatan.index');
+        // } catch (\Exception $e) {
+        //     logger()->error('Error saat menyimpan data:', ['error' => $e->getMessage()]);
+        //     session()->flash('error', 'Terjadi kesalahan saat menyimpan data.');
+        // }
+        $path = null;
+
+        if ($this->image_path instanceof \Livewire\TemporaryUploadedFile) {
+            $path = $this->image_path->store('catatan-images', 'public');
         }
 
-        $this->record->fill($data); // Isi model dengan data dari form
-        $this->record->save(); // Simpan model ke database
+        Catatan::create([
+            'title' => $this->title,
+            'content' => $this->content,
+            'image_path' => $path,
+        ]);
 
-        session()->flash('success', 'Diary berhasil ditambahkan!');
+        session()->flash('success', 'Data berhasil disimpan');
         return redirect()->route('catatan.index');
-    }
+        }
 
     public function render(): View
     {

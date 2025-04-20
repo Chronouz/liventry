@@ -1,36 +1,95 @@
-@extends('layout')
+@extends('homepage')
 
 @section('content')
-<div class="p-4 max-w-xl mx-auto">
-  <h2 class="text-xl font-bold mb-4">Edit Catatan</h2>
+  <div class="w-full px-8 max-w-4xl mx-auto">
+      <h1 class="text-3xl font-bold mb-6 text-gray-800">Edit Catatan</h1>
 
-  <form method="POST" action="{{ route('catatan.update', $catatan) }}" enctype="multipart/form-data">
-    @csrf
-    @method('PUT')
+      @if (session('success'))
+          <div class="mb-4 p-4 bg-green-100 text-green-700 rounded-lg shadow-sm">
+              {{ session('success') }}
+          </div>
+      @endif
 
-    <input name="title" value="{{ $catatan->title }}" class="w-full p-2 mb-2 border rounded">
-    <textarea name="content" class="w-full p-2 mb-2 border rounded">{{ $catatan->content }}</textarea>
+      <form action="{{ route('catatan.update', $catatan->id) }}" method="POST" enctype="multipart/form-data" class="space-y-6">
+          @csrf
+          @method('PUT')
 
-    <input name="entry_date" type="date" value="{{ $catatan->entry_date }}" class="w-full p-2 mb-2 border rounded" required>
+          {{-- JUDUL --}}
+          <div>
+              <label class="block font-semibold mb-1">Judul</label>
+              <input type="text" name="title" value="{{ old('title', $catatan->title) }}"
+                    class="w-full px-4 py-2 border rounded-md bg-gray-100">
+          </div>
 
-    <input id="autocomplete" type="text" placeholder="Cari lokasi..." value="{{ $catatan->location }}" class="w-full p-2 mb-2 border rounded">
-    <input type="hidden" name="location" id="location" value="{{ $catatan->location }}">
+          {{-- CERITA --}}
+          <div>
+              <label class="block font-semibold mb-1">Cerita Kegiatanmu</label>
+              <textarea name="content" rows="4"
+                        class="w-full px-4 py-2 border rounded-md bg-gray-100">{{ old('content', $catatan->content) }}</textarea>
+          </div>
 
-    <input type="file" name="image" class="mb-4">
+          {{-- TANGGAL DAN WAKTU --}}
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div>
+                  <label class="block font-semibold mb-1">Tanggal</label>
+                  <input type="date" name="date" value="{{ old('date', $catatan->date) }}"
+                        class="w-full px-4 py-2 border rounded-md bg-gray-100">
+              </div>
+              <div>
+                    <label class="block font-semibold mb-1">Waktu</label>
+                    <input type="time" step="1" name="time" value="{{ old('time', $catatan->time) }}"
+                      class="w-full px-4 py-2 border rounded-md bg-gray-100">
+              </div>
+          </div>
 
-    <button class="bg-blue-500 text-white px-4 py-2 rounded">Update</button>
-  </form>
+          {{-- GAMBAR --}}
+          <div>
+              <label class="block font-semibold mb-1">Gambar</label>
+              <input type="file" name="image_path" accept="image/*" onchange="previewImage(event)"
+                    class="w-full px-4 py-2 bg-white border rounded-md">
 
-  <script>
-    function initAutocomplete() {
-      const input = document.getElementById('autocomplete');
-      const autocomplete = new google.maps.places.Autocomplete(input);
-      autocomplete.addListener('place_changed', function () {
-        const place = autocomplete.getPlace();
-        document.getElementById('location').value = place.formatted_address;
-      });
-    }
-  </script>
-  <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_GOOGLE_MAPS_API_KEY&libraries=places&callback=initAutocomplete" async defer></script>
-</div>
+              {{-- Preview Gambar Lama --}}
+              @if ($catatan->image_path)
+                  <div class="mt-4">
+                      <p class="text-sm text-gray-600 mb-1">Gambar Saat Ini:</p>
+                      <img src="{{ asset('storage/' . $catatan->image_path) }}"
+                          class="w-40 h-40 object-cover rounded-lg shadow">
+                  </div>
+              @endif
+
+              {{-- Preview Gambar Baru --}}
+              <div id="previewContainer" class="mt-4 hidden">
+                  <p class="text-sm text-gray-600 mb-1">Preview Gambar Baru:</p>
+                  <img id="imagePreview" src="" class="w-40 h-40 object-cover rounded-lg shadow-md">
+              </div>
+          </div>
+
+          <div class="flex justify-between items-center pt-4 pb-6">
+            {{-- Tombol Kiri: Perbarui dan Kembali --}}
+            <div class="flex gap-4">
+                <button type="submit" class="px-6 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
+                    Perbarui
+                </button>
+                <a href="{{ url('/') }}" class="px-6 py-2 bg-gray-600 text-white rounded hover:bg-gray-700">
+                    Kembali
+                </a>
+            </div>
+        
+            {{-- Tombol Kanan: Hapus --}}
+            <form action="{{ route('catatan.destroy', $catatan->id) }}" method="POST"
+                  onsubmit="return confirm('Apakah kamu yakin ingin menghapus catatan ini?');"
+                  class="inline-block">
+                @csrf
+                @method('DELETE')
+                <button type="submit" class="px-6 py-2 bg-red-600 text-white rounded hover:bg-red-700">
+                    Hapus Catatan
+                </button>
+            </form>
+        </div>
+        
+          
+      </form>
+
+      
+  </div>
 @endsection

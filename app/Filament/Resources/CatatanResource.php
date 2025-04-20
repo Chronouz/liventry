@@ -25,7 +25,7 @@ class CatatanResource extends Resource
             ->schema([
                 Forms\Components\TextInput::make('title')->required(),
                 Forms\Components\Textarea::make('content')->required(),
-                Forms\Components\DatePicker::make('entry_date')->required(),
+                Forms\Components\DatePicker::make('date')->required(),
                 Forms\Components\TimePicker::make('time')->required(),
                 Forms\Components\FileUpload::make('image_path')->label('Image'),
             ]);
@@ -36,7 +36,7 @@ class CatatanResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('title'),
-                Tables\Columns\TextColumn::make('entry_date'),
+                Tables\Columns\TextColumn::make('date'),
                 Tables\Columns\TextColumn::make('time'),
             ])
             ->filters([

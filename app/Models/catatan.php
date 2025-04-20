@@ -15,7 +15,7 @@ class catatan extends Model
         'title',
         'content',
         'image_path',
-        'entry_date',
+        'date',
         'time',
     ];
 

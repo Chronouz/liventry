@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\catatan;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class CatatanController extends Controller
 {
@@ -19,7 +20,7 @@ class CatatanController extends Controller
     {
         $catatan = Catatan::when($request->search, function($query) use ($request) {
             return $query->where('location', 'like', "%{$request->search}%")
-                         ->orWhere('entry_date', $request->search);
+                         ->orWhere('date', $request->search);
         })
         ->latest()->paginate(10);
 
@@ -40,21 +41,20 @@ class CatatanController extends Controller
      */
     public function store(Request $request)
     {
-        $data = $request->validate([
+        $validated = $request->validate([
             'title' => 'required',
             'content' => 'required',
-            'location' => 'nullable|string',
-            'entry_date' => 'required|date',
-            'time' => 'required|date_format:H:i', // Validasi waktu
+            'date' => 'required|date',
+            'time' => 'required', 
             'image_path' => 'nullable|image|max:2048',
         ]);
 
-        if ($request->hasFile('image')) {
-            $data['image_path'] = $request->file('image')->store('catatan', 'public');
+        if ($request->hasFile('image_path')) {
+            $validated['image_path'] = $request->file('image_path')->store('catatan', 'public');
         }
 
-        Catatan::create($data);
-        return redirect()->route('catatan.index')->with('success', 'Diarymu berhasil ditambahkan!');
+        Catatan::create($validated);
+        return redirect()->route('catatan.create')->with('success', 'Diarymu berhasil ditambahkan!');
     }
 
     /**
@@ -68,38 +68,50 @@ class CatatanController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(catatan $catatan)
+    public function edit($id)
     {
+        $catatan = Catatan::findOrFail($id);
         return view('catatan.edit', compact('catatan'));
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, catatan $catatan)
+    public function update(Request $request, $id)
     {
-        $data = $request->validate([
-            'title' => 'required',
-            'content' => 'required',
-            'location' => 'nullable|string',
-            'entry_date' => 'required|date',
-            'time' => 'required|date_format:H:i',
-            'image' => 'nullable|image|max:2048',
+        $catatan = Catatan::findOrFail($id);
+
+        $validated = $request->validate([
+            'title' => 'required|string|max:255',
+            'content' => 'required|string',
+            'date' => 'required|date',
+            'time' => 'required',
+            'image_path' => 'nullable|image|max:2048',
         ]);
 
-        if ($request->hasFile('image')) {
-            $data['image_path'] = $request->file('image')->store('catatan', 'public');
+        if ($request->hasFile('image_path')) {
+            $validated['image_path'] = $request->file('image_path')->store('catatan', 'public');
         }
 
-        $catatan->update($data);
-        return redirect()->route('catatan.index')->with('success', 'Diary berhasil diperbarui!');
+        $catatan->update($validated);
+
+        return redirect()->route('catatan.edit', $catatan->id)->with('success', 'Diary berhasil diperbarui.');
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(catatan $catatan)
+    public function destroy($id)
     {
-        //
+        $catatan = Catatan::findOrFail($id);
+
+    // Opsional: hapus file gambar dari storage
+    if ($catatan->image_path && Storage::disk('public')->exists($catatan->image_path)) {
+        Storage::disk('public')->delete($catatan->image_path);
+    }
+
+    $catatan->delete();
+
+    return redirect()->route('catatan.create')->with('success', 'Catatan berhasil dihapus.');
     }
 }

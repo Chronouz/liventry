@@ -59,7 +59,7 @@ let today = new Date();
           renderCalendar(current);
         }
       
-        function filterByDate(date) {
+        window.filterByDate = function (date) {
           window.location.href = `/?tanggal=${date}`;
         }
       
@@ -68,22 +68,44 @@ let today = new Date();
         });
 
         window.previewImage = function (event) {
-            const input = event.target;
-            const previewContainer = document.getElementById('imagePreview');
-            const previewImage = previewContainer.querySelector('img');
-        
-            if (input.files && input.files[0]) {
+            const previewContainer = document.getElementById('previewContainer');
+            const imagePreview = document.getElementById('imagePreview');
+            const file = event.target.files[0];
+    
+            console.log('File selected:', file); // Debugging: Periksa file yang dipilih
+    
+            if (file) {
                 const reader = new FileReader();
                 reader.onload = function (e) {
-                    previewImage.src = e.target.result;
-                    previewImage.classList.remove('hidden');
+                    console.log('FileReader result:', e.target.result); // Debugging: Periksa hasil FileReader
+                    imagePreview.src = e.target.result;
+                    previewContainer.classList.remove('hidden');
                 };
-                reader.readAsDataURL(input.files[0]);
+                reader.readAsDataURL(file);
             } else {
-                previewImage.src = '';
-                previewImage.classList.add('hidden');
+                console.log('No file selected'); // Debugging: Tidak ada file
+                previewContainer.classList.add('hidden');
+                imagePreview.src = '';
             }
-        };
+        }
+
+        // window.previewImage = function (event) {
+        //     const input = event.target;
+        //     const previewContainer = document.getElementById('imagePreview');
+        //     const previewImage = previewContainer.querySelector('img');
+        
+        //     if (input.files && input.files[0]) {
+        //         const reader = new FileReader();
+        //         reader.onload = function (e) {
+        //             previewImage.src = e.target.result;
+        //             previewImage.classList.remove('hidden');
+        //         };
+        //         reader.readAsDataURL(input.files[0]);
+        //     } else {
+        //         previewImage.src = '';
+        //         previewImage.classList.add('hidden');
+        //     }
+        // };
 
         document.addEventListener('DOMContentLoaded', () => {
             // Inisialisasi Flatpickr untuk input tanggal
@@ -101,3 +123,86 @@ let today = new Date();
                 time_24hr: true, // Format 24 jam
             });
         });
+
+        document.addEventListener('DOMContentLoaded', () => {
+            // Render kalender dengan tanggal hari ini
+            renderCalendar(current);
+        
+            // Redirect ke tanggal hari ini jika halaman dimuat pertama kali
+            const urlParams = new URLSearchParams(window.location.search);
+            const currentPath = window.location.pathname; // Ambil path URL saat ini
+
+            // Periksa apakah pengguna berada di halaman utama dan URL tidak memiliki parameter `tanggal` atau `search`
+            if (currentPath === '/' && !urlParams.has('tanggal') && !urlParams.has('search')) {
+                const today = new Date();
+                const todayString = today.toISOString().split('T')[0];
+                window.location.href = `/?tanggal=${todayString}`;
+            }
+
+            const weatherBar = document.getElementById("weather-bar");
+            const apiKey = 'b284fea5b0c04676dd92b966fb0eb5b3'; // Ganti dengan API key OpenWeatherMap kamu
+
+            if (!weatherBar) return;
+
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+            async function (position) {
+                const lat = position.coords.latitude;
+                const lon = position.coords.longitude;
+
+                try {
+                    const response = await fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${apiKey}&units=metric`);
+                    const data = await response.json();
+
+                    const location = data.name;
+                    const temp = data.main.temp;
+                    const description = data.weather[0].description;
+                    const icon = data.weather[0].icon;
+                    const iconUrl = `https://openweathermap.org/img/wn/${icon}@2x.png`;
+
+                    // Efek animasi masuk
+                    weatherBar.classList.remove("animate-pulse");
+                    weatherBar.classList.add("opacity-0");
+
+                    // Tambahkan konten setelah fade
+                    setTimeout(() => {
+                        weatherBar.innerHTML = `
+                            <div class="flex items-center space-x-4">
+                                <img src="${iconUrl}" alt="${description}"
+                                     class="w-12 h-12 transition transform scale-90 hover:scale-105 duration-300 ease-in-out drop-shadow">
+                                <div>
+                                    <div class="text-lg font-bold">${location}</div>
+                                    <div class="text-sm capitalize">${description}, <span class="font-semibold">${temp}°C</span></div>
+                                </div>
+                            </div>
+                        `;
+                        weatherBar.classList.remove("opacity-0");
+                        weatherBar.classList.add("opacity-100");
+                    }, 300);
+                } catch (error) {
+                    console.error('Error fetching weather:', error);
+                    weatherBar.textContent = 'Gagal memuat data cuaca.';
+                }
+            },
+            function (error) {
+                console.error('Geolocation error:', error.code, error.message);
+                weatherBar.textContent = 'Tidak dapat mengakses lokasi Anda.';
+            },
+            {
+                timeout: 10000
+            }
+        );
+    } else {
+        weatherBar.textContent = 'Browser tidak mendukung geolocation.';
+    }
+        });
+
+        navigator.geolocation.getCurrentPosition(
+            function (position) {
+                console.log('Lokasi berhasil:', position);
+            },
+            function (error) {
+                console.error('Geolocation error:', error.code, error.message); // ini yang penting
+                weatherBar.textContent = 'Tidak dapat mengakses lokasi Anda.';
+            }
+        );
