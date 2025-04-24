@@ -4,40 +4,62 @@
 
 @layer base {
     body {
-      @apply font-roboto bg-gray-100 text-gray-800;
+        @apply font-roboto bg-gray-100 text-gray-800;
     }
-  }
-  
-  @layer components {
+}
+
+@layer components {
     .sidebar {
-      @apply bg-diaroBlue text-white w-1/4 flex flex-col;
+        @apply bg-diaroBlue text-white w-1/4 flex flex-col;
     }
-  
+
     .sidebar-header {
-      @apply flex items-center p-4;
+        @apply flex items-center p-4;
     }
-  
+
     .sidebar-user {
-      @apply flex items-center p-4 bg-diaroDark;
+        @apply flex items-center p-4 bg-diaroDark;
     }
-  
+
     .sidebar-user img {
-      @apply w-10 h-10 rounded-full mr-2;
+        @apply w-10 h-10 rounded-full mr-2;
     }
-  
+
     .entry-card {
-      @apply bg-white rounded shadow p-4 flex;
+        @apply bg-white rounded shadow p-4 flex;
     }
-  
+
     .entry-title {
-      @apply font-bold text-lg;
+        @apply font-bold text-lg;
     }
-  
+
     .entry-meta {
-      @apply flex items-center text-gray-500 text-sm mt-2;
+        @apply flex items-center text-gray-500 text-sm mt-2;
     }
-  
+
     .btn-add-entry {
-      @apply bg-diaroDark px-4 py-2 rounded text-white font-medium hover:bg-blue-800;
+        @apply bg-diaroDark px-4 py-2 rounded text-white font-medium hover:bg-blue-800;
     }
-  }
+}
+
+/* Container untuk teks bergerak */
+.ticker {
+    height: 2.5rem; /* Sesuaikan dengan tinggi teks */
+    overflow: hidden;
+    position: relative;
+    display: flex; /* Gunakan Flexbox */
+    align-items: center; /* Posisikan teks di tengah secara vertikal */
+    justify-content: center; /* Posisikan teks di tengah secara horizontal */
+}
+
+/* Daftar teks yang akan bergulir */
+.scrolling-text {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    display: flex;
+    flex-direction: column; /* Teks bergerak secara vertikal */
+    align-items: center; /* Teks di tengah secara horizontal */
+    transition: transform 0.5s ease-in-out; /* Animasi transisi */
+}

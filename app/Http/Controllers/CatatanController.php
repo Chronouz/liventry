@@ -18,13 +18,10 @@ class CatatanController extends Controller
      */
     public function index(Request $request)
     {
-        $catatan = Catatan::when($request->search, function($query) use ($request) {
-            return $query->where('location', 'like', "%{$request->search}%")
-                         ->orWhere('date', $request->search);
-        })
-        ->latest()->paginate(10);
+        $items = Catatan::all(); // Mengambil semua catatan dari database
+        $tanggal = now()->format('Y-m-d'); // Tanggal default untuk view
 
-    return view('catatan.index', compact('catatan'));
+        return view('catatan.show', compact('items', 'tanggal'));
     }
     
 

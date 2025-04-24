@@ -23,6 +23,7 @@ Route::middleware(['auth'])->group(function () {
 
 Route::get('/', [HomepageController::class, 'index'])->name('home');
 Route::get('/create', [CatatanController::class, 'create'])->name('catatan.create');
+Route::get('/catatan', [CatatanController::class, 'index'])->name('catatan.index');
 Route::get('/catatan/{id}/edit', [CatatanController::class, 'edit'])->name('catatan.edit');
 Route::put('/catatan/{id}', [CatatanController::class, 'update'])->name('catatan.update');
 Route::delete('/catatan/{id}', [CatatanController::class, 'destroy'])->name('catatan.destroy');
